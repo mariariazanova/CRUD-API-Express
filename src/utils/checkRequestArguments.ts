@@ -19,8 +19,6 @@ export const checkRequestArguments = (
   method: RestMethod,
   userId?: string
 ) => {
-  console.log(res);
-  console.log(body);
   if (Object.keys(body).every((key: string) => requiredKeys.includes(key))) {
     if (requiredKeys.some((key) => !body[key])) {
       sendJsonResponse(res, undefined, 400, EMPTY_REQUIRED_FIELD_MESSAGE);
