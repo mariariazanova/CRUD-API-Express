@@ -1,12 +1,11 @@
-import { ServerResponse } from 'http';
+import { Response } from 'express';
 import { User } from '../interfaces/user';
 
 export const sendJsonResponse = (
-  res: ServerResponse,
+  res: Response,
   value?: User | User[] | undefined,
   statusCode = 200,
   message = ''
 ): void => {
-  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(value || { message }));
+  res.status(statusCode).json(value || { error: message });
 };

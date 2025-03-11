@@ -2,6 +2,7 @@ export const SERVER_RUNNING_MESSAGE = 'Server is running on port';
 
 export const SERVER_ERROR_CLOSE_MESSAGE =
   'Server has been closed because of error';
+export const SERVER_ERROR_START_MESSAGE = 'Failed to start server';
 export const SERVER_CLOSE_MESSAGE = 'Server has been closed.';
 
 export const INTERNAL_ERROR_MESSAGE =

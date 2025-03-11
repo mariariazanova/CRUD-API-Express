@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crud-api-app
+    env_file:
+      - .env
+    ports:
+      - '${PORT}:${PORT}'
+    volumes:
+      - ./src:/app/src    # Mount the source code for live reloading
+      - db-data:/app/database  # Persist SQLite database file
+    environment:
+      - USE_SQLITE=${USE_SQLITE}
+      - DB_FILE_PATH=/usr/app/database/database.sqlite
+
+volumes:
+  db-data:

@@ -5,16 +5,17 @@ import {
   IMPOSSIBLE_UPDATE_ID_MESSAGE,
   INCORRECT_DATA_FORMAT_MESSAGE,
   INCORRECT_FIELD_MESSAGE,
+  INTERNAL_ERROR_MESSAGE,
   NO_USER_MESSAGE,
 } from '../constants/messages';
 
 const requiredKeys: Array<string> = ['name', 'email'];
 
-export const checkRequestArguments = (
+export const checkRequestArguments = async (
   /* eslint-disable @typescript-eslint/no-explicit-any */
   res: any,
   body: any,
-  fn: (body: any, userId?: string) => any,
+  fn: (body: any, userId?: string) => Promise<any>,
   /* eslint-enable @typescript-eslint/no-explicit-any */
   method: RestMethod,
   userId?: string
@@ -25,16 +26,20 @@ export const checkRequestArguments = (
     } else if (requiredKeys.some((key) => typeof body[key] !== 'string')) {
       sendJsonResponse(res, undefined, 400, INCORRECT_DATA_FORMAT_MESSAGE);
     } else {
-      const user = fn(userId, body);
+      try {
+        const user = await fn(userId, body);
 
-      if (method === RestMethod.Post) {
-        sendJsonResponse(res, user, 201);
-      } else {
-        if (user) {
-          sendJsonResponse(res, user);
+        if (method === RestMethod.Post) {
+          sendJsonResponse(res, user, 201);
         } else {
-          sendJsonResponse(res, undefined, 404, NO_USER_MESSAGE);
+          if (user) {
+            sendJsonResponse(res, user);
+          } else {
+            sendJsonResponse(res, undefined, 404, NO_USER_MESSAGE);
+          }
         }
+      } catch {
+        sendJsonResponse(res, undefined, 500, INTERNAL_ERROR_MESSAGE);
       }
     }
   } else {

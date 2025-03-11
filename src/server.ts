@@ -1,38 +1,44 @@
-import { createServer, IncomingMessage, ServerResponse, Server } from 'http';
-import { handleRequest } from './routes/userRoutes';
-import { sendJsonResponse } from './utils/sendJsonResponse';
-import { saveDataToFile, setUsers } from './dataBase/dataBaseState';
+import express, { json } from 'express';
+// import { saveDataToFile, setUsers } from './dataBase/dataBaseState';
 import {
-  INTERNAL_ERROR_MESSAGE,
   SERVER_CLOSE_MESSAGE,
   SERVER_ERROR_CLOSE_MESSAGE,
   SERVER_RUNNING_MESSAGE,
 } from './constants/messages';
+import { userControllerPromise } from './config/config';
+import { userRoutes } from './routes/userRoutes';
+import { errorHandler } from './middlewares/errorHandler';
 
-export const startServer = (port: string | number): Server => {
-  const server = createServer((req: IncomingMessage, res: ServerResponse) => {
-    try {
-      handleRequest(req, res).then();
-    } catch {
-      sendJsonResponse(res, undefined, 500, INTERNAL_ERROR_MESSAGE);
-    }
-  });
+export async function startServer(port: string | number): Promise<void> {
+  const app = express();
 
-  server.listen(port, () => {
+  app.use(json());
+
+  const userController = await userControllerPromise;
+
+  app.use('/api', userRoutes(userController));
+
+  // Global error handler
+  app.use(errorHandler);
+
+  // Start the server
+  const server = app.listen(port, () => {
     console.log(`${SERVER_RUNNING_MESSAGE} ${port}`);
   });
 
+  // Handle errors
   server.on('error', () => {
     console.log(SERVER_ERROR_CLOSE_MESSAGE);
-    setUsers([]);
-    saveDataToFile();
+    // setUsers([]);
+    // saveDataToFile();
 
     process.exit(1);
   });
 
+  // Graceful shutdown (CTRL+C)
   process.on('SIGINT', () => {
-    setUsers([]);
-    saveDataToFile();
+    // setUsers([]);
+    // saveDataToFile();
 
     server.close((err) => {
       if (err) {
@@ -44,6 +50,4 @@ export const startServer = (port: string | number): Server => {
       }
     });
   });
-
-  return server;
-};
+}

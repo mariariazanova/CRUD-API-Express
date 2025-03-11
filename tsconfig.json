@@ -5,7 +5,7 @@
     "lib": ["ES2020"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["node", "uuid", "jest", "supertest", "superagent"],
+    "types": ["node", "uuid"],
     "typeRoots": ["node_modules/@types"],
     "strict": true,
     "esModuleInterop": true,
@@ -20,5 +20,5 @@
     "incremental": true
   },
   "include": ["src/**/*.ts", "src/dataBase/data.json"],
-  "exclude": ["node_modules", "test", "**/*.spec.ts" ,".env"]
+  "exclude": ["node_modules", "**/*.spec.ts" ,".env"]
 }

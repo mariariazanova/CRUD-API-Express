@@ -1,59 +1,36 @@
 import { v4 } from 'uuid';
 import { User } from '../interfaces/user';
-import {
-  getUsers,
-  addUser,
-  setUsers,
-  saveDataToFile,
-} from '../dataBase/dataBaseState';
+import { Repository } from '../interfaces/repository';
 
-export const getAllUsersFromDb = (): User[] => getUsers();
+export class UserService {
+  constructor(private userRepository: Repository) {}
 
-export const getUserByIdFromDb = (id: string): User | undefined => {
-  const users = getUsers();
-
-  return users.find((user) => user.id === id);
-};
-
-export const createUserInDb = (userData: Omit<User, 'id'>): User => {
-  const newUser: User = { id: v4(), ...userData };
-
-  addUser(newUser);
-  saveDataToFile();
-
-  return newUser;
-};
-
-export const updateUserInDb = (
-  userData: Partial<Omit<User, 'id'>>,
-  id: string
-): User | undefined => {
-  const users = getUsers();
-  const userIndex = users.findIndex((user) => user.id === id);
-
-  if (userIndex === -1) {
-    return undefined;
-  }
-  const updatedUser = { ...users[userIndex], ...userData };
-
-  users[userIndex] = updatedUser;
-  setUsers(users);
-  saveDataToFile();
-
-  return updatedUser;
-};
-
-export const deleteUserInDb = (id: string): boolean => {
-  const users = getUsers();
-  const userIndex = users.findIndex((user) => user.id === id);
-
-  if (userIndex === -1) {
-    return false;
+  public async getAllUsers(): Promise<User[]> {
+    return this.userRepository.getUsers();
   }
 
-  users.splice(userIndex, 1);
-  setUsers(users);
-  saveDataToFile();
+  public async getUserById(id: string): Promise<User | undefined> {
+    return this.userRepository.getUserById(id);
+  }
 
-  return true;
-};
+  public async createUser(
+    userData: Omit<User, 'id'>
+  ): Promise<User | undefined> {
+    const newUser: User = { id: v4(), ...userData };
+
+    await this.userRepository.addUser(newUser);
+
+    return newUser;
+  }
+
+  public async updateUser(
+    userData: Partial<Omit<User, 'id'>>,
+    id: string
+  ): Promise<User | undefined> {
+    return this.userRepository.updateUser(userData, id);
+  }
+
+  public async deleteUser(id: string): Promise<boolean> {
+    return this.userRepository.deleteUser(id);
+  }
+}

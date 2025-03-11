@@ -8,7 +8,7 @@ import prettierPlugin from 'eslint-plugin-prettier';
 export default [
   {
     ignores: ['node_modules', 'dist', 'package-lock.json', '.angular/cache', 'eslint.config.mjs'],
-    files: ["**/*.{js,mjs,cjs,ts}", "*.{js,mjs,cjs,ts}"],
+    files: ["**/*.ts", "*.ts"],
     languageOptions: { globals: globals.browser },
     plugins: {
       '@typescript-eslint': typescriptPlugin,
