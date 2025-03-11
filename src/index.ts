@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 4000;
 async function bootstrap() {
   try {
     await startServer(PORT);
-  } catch (error) {
+  } catch {
     console.error(SERVER_ERROR_START_MESSAGE);
     process.exit(1);
   }
